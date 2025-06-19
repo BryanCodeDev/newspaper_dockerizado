@@ -1,0 +1,46 @@
+<!-- article_new.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Nuevo Artículo - Drift Zone{% endblock title %}
+
+{% block content %}
+<div class="text-center mb-5 fade-in-up">
+    <h1 class="display-4 neon-glow">✍️ Nuevo Artículo</h1>
+    <p class="lead">Comparte tu conocimiento sobre drift con la comunidad</p>
+</div>
+
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.2s;">
+    <div class="col-lg-8">
+        <div class="article-card">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <h4 class="text-gradient mb-3">📝 Detalles del Artículo</h4>
+                    {{ form|crispy }}
+                </div>
+
+                <div class="glass-effect p-4 rounded mb-4">
+                    <h6 class="drift-accent mb-3">💡 Consejos para un buen artículo:</h6>
+                    <ul class="text-muted mb-0">
+                        <li>Usa un título llamativo y descriptivo</li>
+                        <li>Incluye detalles técnicos específicos</li>
+                        <li>Comparte tu experiencia personal</li>
+                        <li>Sé claro y conciso en tus explicaciones</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap gap-3">
+                    <a href="{% url 'article_list' %}" class="btn btn-outline">
+                        ← 📚 Cancelar
+                    </a>
+                    <button class="btn btn-primary btn-lg pulse-hover" type="submit">
+                        🚀 Publicar Artículo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

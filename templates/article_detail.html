@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.title }} - Drift Blog{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Artículo principal -->
+            <article class="content-wrapper glass-effect fade-in-up">
+                <!-- Header del artículo -->
+                <header class="article-header mb-4">
+                    <h1 class="text-gradient neon-glow mb-3">{{ object.title }}</h1>
+                    
+                    <div class="article-meta">
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div class="meta-item">
+                                <i class="fas fa-user drift-accent"></i>
+                                <span class="ms-1">{{ object.author }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar drift-accent"></i>
+                                <span class="ms-1">{{ object.date|date:"d M Y, H:i" }}</span>
+                            </div>
+                            {% if object.category %}
+                            <div class="meta-item">
+                                <i class="fas fa-tag drift-accent"></i>
+                                <span class="ms-1">{{ object.category }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Contenido del artículo -->
+                <div class="article-content">
+                    <div class="article-body">
+                        {{ object.body|linebreaks }}
+                    </div>
+                </div>
+                
+                <!-- Footer del artículo -->
+                <footer class="article-footer mt-5 pt-4" style="border-top: 1px solid rgba(139, 92, 246, 0.3);">
+                    {% if user == object.author %}
+                        <div class="author-actions mb-4">
+                            <h5 class="purple-accent mb-3">
+                                <i class="fas fa-cog"></i> Acciones del Autor
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <a href="{% url 'article_edit' article.pk %}" class="btn btn-primary w-100 pulse-hover">
+                                        <i class="fas fa-edit"></i> Editar Artículo
+                                    </a>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <a href="{% url 'article_delete' article.pk %}" class="btn w-100"
+                                       style="background: linear-gradient(135deg, #dc3545, #c82333); border: none; color: white;">
+                                        <i class="fas fa-trash"></i> Eliminar Artículo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Información del autor -->
+                    <div class="author-info glass-effect p-3 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="author-avatar me-3">
+                                <div class="avatar-circle">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="author-details">
+                                <h6 class="drift-accent mb-1">{{ object.author }}</h6>
+                                <small class="text-muted">Autor del artículo</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navegación -->
+                    <div class="article-navigation">
+                        <a href="{% url 'article_list' %}" class="btn btn-outline pulse-hover">
+                            <i class="fas fa-arrow-left"></i> Volver a Todos los Artículos
+                        </a>
+                    </div>
+                </footer>
+            </article>
+            
+            <!-- Sección de artículos relacionados (opcional) -->
+            {% comment %}
+            <section class="related-articles mt-5">
+                <div class="content-wrapper glass-effect">
+                    <h3 class="text-gradient mb-4">
+                        <i class="fas fa-newspaper drift-accent"></i> 
+                        Artículos Relacionados
+                    </h3>
+                    <!-- Aquí puedes agregar lógica para mostrar artículos relacionados -->
+                </div>
+            </section>
+            {% endcomment %}
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos específicos para el detalle del artículo */
+.article-header {
+    text-align: center;
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.article-body {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--light-gray);
+}
+
+.article-body p {
+    margin-bottom: var(--spacing-md);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    color: var(--medium-gray);
+}
+
+.author-info {
+    border-left: 4px solid var(--neon-cyan);
+}
+
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bright-white);
+    font-size: 1.2rem;
+}
+
+.author-actions {
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+}
+
+/* Mejorar la legibilidad del contenido */
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+    color: var(--accent-purple);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.article-content blockquote {
+    border-left: 4px solid var(--neon-cyan);
+    padding-left: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+    font-style: italic;
+    color: var(--drift-accent);
+}
+</style>
+{% endblock content %}

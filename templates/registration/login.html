@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Iniciar Sesión - Drift Blog{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="content-wrapper glass-effect fade-in-up">
+                <div class="text-center mb-4">
+                    <h1 class="text-gradient neon-glow">Iniciar Sesión</h1>
+                    <p class="lead">Accede a tu cuenta de Drift Blog</p>
+                </div>
+                
+                <form method="post" class="drift-form">
+                    {% csrf_token %}
+                    
+                    <!-- Campo de usuario/email -->
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            <i class="fas fa-user drift-accent"></i> Usuario
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger mt-1">
+                                {{ form.username.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Campo de contraseña -->
+                    <div class="mb-4">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">
+                            <i class="fas fa-lock drift-accent"></i> Contraseña
+                        </label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-danger mt-1">
+                                {{ form.password.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Botón de login -->
+                    <div class="d-grid mb-3">
+                        <button class="btn btn-primary pulse-hover" type="submit">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </button>
+                    </div>
+                    
+                    <!-- Enlaces adicionales -->
+                    <div class="text-center">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <a href="{% url 'password_reset' %}" class="drift-accent">
+                                    ¿Olvidaste tu contraseña?
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <span class="text-muted">¿No tienes cuenta?</span>
+                                <a href="{% url 'signup' %}" class="btn btn-outline ms-2">
+                                    Registrarse
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

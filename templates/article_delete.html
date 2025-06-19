@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Artículo - Drift Blog{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="content-wrapper glass-effect fade-in-up">
+                <div class="text-center mb-4">
+                    <h1 class="text-gradient">
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                        Eliminar Artículo
+                    </h1>
+                </div>
+                
+                <!-- Información del artículo -->
+                <div class="article-card mb-4" style="border-color: #dc3545;">
+                    <div class="article-meta mb-3">
+                        <i class="fas fa-calendar drift-accent"></i>
+                        <span>{{ article.date|date:"d M Y" }}</span>
+                        <i class="fas fa-user drift-accent ms-3"></i>
+                        <span>{{ article.author }}</span>
+                    </div>
+                    <h3 class="article-title">{{ article.title }}</h3>
+                    <div class="article-excerpt text-muted">
+                        {{ article.body|truncatewords:30 }}
+                    </div>
+                </div>
+                
+                <!-- Advertencia -->
+                <div class="alert alert-danger glass-effect mb-4" role="alert">
+                    <i class="fas fa-warning me-2"></i>
+                    <strong>¡Cuidado!</strong> Esta acción no se puede deshacer. El artículo será eliminado permanentemente.
+                </div>
+                
+                <!-- Formulario de confirmación -->
+                <form action="" method="post" class="drift-form">
+                    {% csrf_token %}
+                    
+                    <div class="text-center mb-4">
+                        <p class="lead">¿Estás seguro de que quieres eliminar este artículo?</p>
+                        <p class="text-muted">"{{ article.title }}"</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="{% url 'article_detail' article.pk %}" class="btn btn-outline w-100">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn w-100 pulse-hover" type="submit" 
+                                    style="background: linear-gradient(135deg, #dc3545, #c82333); border: none; color: white;">
+                                <i class="fas fa-trash"></i> Confirmar Eliminación
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos específicos para la página de eliminación */
+.alert-danger.glass-effect {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    color: #dc3545;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock content %}
