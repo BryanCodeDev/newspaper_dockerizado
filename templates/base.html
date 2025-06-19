@@ -40,14 +40,14 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">🏠 Inicio</a>
+                            <a class="nav-link" href="{% url 'home' %}">Inicio</a>
                         </li>
                         {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'article_list' %}">📰 Artículos</a>
+                                <a class="nav-link" href="{% url 'article_list' %}">Artículos</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'article_new' %}">✍️ Nuevo Post</a>
+                                <a class="nav-link" href="{% url 'article_new' %}">Nuevo Post</a>
                             </li>
                         {% endif %}
                     </ul>
@@ -60,9 +60,9 @@
                                     👤 {{ user.username }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end glass-effect">
-                                    <li><a class="dropdown-item" href="{% url 'password_change' %}">🔒 Cambiar Contraseña</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'password_change' %}">Cambiar Contraseña</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{% url 'logout' %}">🚪 Cerrar Sesión</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
                                 </ul>
                             </div>
                         {% else %}
@@ -88,7 +88,7 @@
         <footer class="footer">
             <div class="container">
                 <p>&copy; 2025 <span class="text-gradient">Drift Zone</span> - El mundo del drift a toda velocidad</p>
-                <p>Hecho con ❤️ para los amantes del drift</p>
+                <p>Hecho para los amantes del drift</p>
             </div>
         </footer>
     </div>

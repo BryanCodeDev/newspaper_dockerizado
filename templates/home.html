@@ -19,7 +19,7 @@
     <!-- Tarjeta de Bienvenida -->
     <div class="col-lg-8 fade-in-up" style="animation-delay: 0.6s;">
         <div class="article-card pulse-hover">
-            <h2>🔥 ¡Acelera tu Pasión!</h2>
+            <h2>¡Acelera tu Pasión!</h2>
             <p class="lead">
                 En <strong class="drift-accent">Drift Zone</strong> encontrarás todo lo que necesitas saber sobre el fascinante mundo del drift.
             </p>
@@ -38,25 +38,25 @@
     <!-- Panel Lateral -->
     <div class="col-lg-4 fade-in-up" style="animation-delay: 0.8s;">
         <div class="article-card text-center">
-            <h3>🏆 Únete a la Comunidad</h3>
+            <h3>Únete a la Comunidad</h3>
             <p>Comparte tus experiencias, aprende de los mejores y forma parte de la familia drift más grande de habla hispana.</p>
             
             {% if not user.is_authenticated %}
                 <div class="d-grid gap-2">
                     <a href="{% url 'signup' %}" class="btn btn-primary">
-                        🎯 Registrarse Gratis
+                        Registrarse Gratis
                     </a>
                     <a href="{% url 'login' %}" class="btn btn-outline">
-                        🔑 Ya tengo cuenta
+                        Ya tengo cuenta
                     </a>
                 </div>
             {% else %}
                 <div class="d-grid gap-2">
                     <a href="{% url 'article_new' %}" class="btn btn-primary">
-                        ✍️ Escribir Artículo
+                        Escribir Artículo
                     </a>
                     <p class="drift-accent mt-3">
-                        ¡Hola <strong>{{ user.username }}</strong>! 👋
+                        ¡Hola <strong>{{ user.username }}</strong>
                     </p>
                 </div>
             {% endif %}
@@ -94,15 +94,15 @@
 <!-- Call to Action Final -->
 <div class="text-center fade-in-up" style="animation-delay: 1.6s;">
     <div class="article-card">
-        <h2 class="text-gradient">¿Listo para quemar llanta? 🔥</h2>
+        <h2 class="text-gradient">¿Listo para quemar llanta?</h2>
         <p class="lead">Sumérgete en el mundo del drift y descubre todo lo que tenemos para ti</p>
         <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a href="{% url 'article_list' %}" class="btn btn-primary btn-lg pulse-hover">
-                📚 Explorar Artículos
+                Explorar Artículos
             </a>
             {% if user.is_authenticated %}
                 <a href="{% url 'article_new' %}" class="btn btn-outline btn-lg pulse-hover">
-                    ✨ Crear Contenido
+                    Crear Contenido
                 </a>
             {% endif %}
         </div>
