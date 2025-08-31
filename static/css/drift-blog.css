@@ -52,6 +52,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
+  overflow-x: hidden; /* ✅ Evita scroll horizontal */
 }
 
 /* ================================================
@@ -138,6 +139,9 @@ body {
 .main-container {
   min-height: 100vh;
   position: relative;
+  width: 100%;
+  max-width: 100vw; /* ✅ Evita desbordamiento horizontal */
+  overflow-x: hidden; /* ✅ Evita scroll horizontal */
 }
 
 .content-wrapper {
@@ -148,6 +152,8 @@ body {
   padding: var(--spacing-xl);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-light);
+  max-width: 100%; /* ✅ Evita desbordamiento */
+  overflow: hidden; /* ✅ Evita desbordamiento */
 }
 
 .glass-effect {
@@ -165,6 +171,8 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   margin-bottom: var(--spacing-md);
   color: var(--text-primary);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  overflow-wrap: break-word; /* ✅ Soporte adicional */
 }
 
 h1 {
@@ -188,6 +196,8 @@ p {
   color: var(--text-secondary);
   margin-bottom: var(--spacing-md);
   line-height: 1.7;
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  overflow-wrap: break-word; /* ✅ Soporte adicional */
 }
 
 .lead {
@@ -197,7 +207,7 @@ p {
 }
 
 /* ================================================
-   6. TARJETAS DE ARTÍCULOS PROFESIONALES
+   6. TARJETAS DE ARTÍCULOS PROFESIONALES (CORREGIDO)
    ================================================ */
 .article-card {
   background: rgba(22, 33, 62, 0.6);
@@ -208,6 +218,11 @@ p {
   border: 1px solid var(--border-light);
   transition: all 0.3s ease;
   position: relative;
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  height: fit-content; /* ✅ Ajusta altura al contenido */
+  min-width: 0; /* ✅ Permite que flexbox funcione correctamente */
+  max-width: 100%; /* ✅ Evita desbordamiento horizontal */
 }
 
 .article-card:hover {
@@ -221,6 +236,7 @@ p {
   border-bottom: 1px solid var(--border-light);
   padding-bottom: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
+  overflow: hidden; /* ✅ Evita desbordamiento */
 }
 
 .article-title {
@@ -230,6 +246,11 @@ p {
   margin-bottom: var(--spacing-sm);
   text-decoration: none;
   line-height: 1.3;
+  word-wrap: break-word; /* ✅ Rompe títulos largos */
+  overflow-wrap: break-word; /* ✅ Soporte adicional */
+  hyphens: auto; /* ✅ Guiones automáticos */
+  max-width: 100%; /* ✅ Evita desbordamiento */
+  overflow: hidden; /* ✅ Evita desbordamiento */
 }
 
 .article-title:hover {
@@ -244,23 +265,60 @@ p {
   gap: var(--spacing-md);
   align-items: center;
   flex-wrap: wrap;
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  max-width: 100%; /* ✅ Evita desbordamiento horizontal */
 }
 
 .meta-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  min-width: 0; /* ✅ Permite truncado */
+  max-width: 100%; /* ✅ Evita desbordamiento */
+}
+
+.meta-item span {
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  overflow-wrap: break-word; /* ✅ Soporte adicional */
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  text-overflow: ellipsis; /* ✅ Añade "..." si es necesario */
+  white-space: nowrap; /* ✅ Una línea para usernames largos */
+  max-width: 150px; /* ✅ Límite específico para usernames */
 }
 
 .article-content {
   color: var(--text-secondary);
   line-height: 1.7;
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  overflow-wrap: break-word; /* ✅ Soporte adicional */
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  max-width: 100%; /* ✅ Evita desbordamiento horizontal */
 }
 
 .article-excerpt {
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: var(--spacing-md);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  overflow-wrap: break-word; /* ✅ Soporte adicional */
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  max-height: 4.5em; /* ✅ Límite de altura ~3 líneas */
+  position: relative;
+  max-width: 100%; /* ✅ Evita desbordamiento horizontal */
+}
+
+/* Efecto fade-out para excerpts largos */
+.article-excerpt::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30%;
+  height: 1.2em;
+  background: linear-gradient(to right, transparent, rgba(22, 33, 62, 0.6));
+  pointer-events: none;
 }
 
 /* ================================================
@@ -277,6 +335,7 @@ p {
   align-items: center;
   gap: var(--spacing-xs);
   justify-content: center;
+  white-space: nowrap; /* ✅ Evita que el texto se rompa */
 }
 
 .btn-primary {
@@ -327,6 +386,8 @@ p {
   padding: var(--spacing-sm);
   transition: all 0.3s ease;
   font-size: 1rem;
+  width: 100%; /* ✅ Asegura ancho completo */
+  max-width: 100%; /* ✅ Evita desbordamiento */
 }
 
 .form-control:focus {
@@ -354,6 +415,8 @@ p {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-light);
   color: var(--text-primary);
+  width: 100%; /* ✅ Asegura ancho completo */
+  max-width: 100%; /* ✅ Evita desbordamiento */
 }
 
 .form-select:focus {
@@ -369,6 +432,8 @@ p {
   border: 1px solid var(--border-light);
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-md);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  overflow-wrap: break-word; /* ✅ Soporte adicional */
 }
 
 .alert-success {
@@ -481,6 +546,7 @@ p {
 .dropdown-item {
   color: var(--text-secondary);
   transition: all 0.3s ease;
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 .dropdown-item:hover {
@@ -495,6 +561,8 @@ p {
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
   transition: all 0.3s ease;
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 .info-card:hover {
@@ -510,6 +578,7 @@ p {
   border-radius: var(--border-radius-lg);
   margin-bottom: var(--spacing-xl);
   border: 1px solid var(--border-light);
+  overflow: hidden; /* ✅ Evita desbordamiento */
 }
 
 .hero-title {
@@ -517,6 +586,7 @@ p {
   font-weight: 700;
   margin-bottom: var(--spacing-md);
   color: var(--text-primary);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 .hero-subtitle {
@@ -526,6 +596,7 @@ p {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 /* ================================================
@@ -589,8 +660,27 @@ p {
 }
 
 /* ================================================
-   15. RESPONSIVE EMPRESARIAL
+   15. RESPONSIVE EMPRESARIAL (MEJORADO)
    ================================================ */
+/* Container responsive fixes */
+.container {
+  max-width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Grid system fixes */
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.col-md-6, .col-lg-4, .col-lg-6, .col-lg-8 {
+  padding-left: 15px;
+  padding-right: 15px;
+  min-width: 0; /* ✅ Permite que flexbox funcione correctamente */
+}
+
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2rem;
@@ -603,6 +693,7 @@ p {
   
   .article-card {
     padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
   }
   
   .navbar-brand {
@@ -612,6 +703,24 @@ p {
   .footer-content {
     grid-template-columns: 1fr;
     text-align: center;
+  }
+  
+  /* Mejoras específicas para artículos en móvil */
+  .article-title {
+    font-size: 1.2rem;
+    line-height: 1.4;
+  }
+  
+  .article-meta {
+    font-size: 0.8rem;
+    gap: var(--spacing-sm);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .meta-item span {
+    max-width: none; /* ✅ Permite texto completo en móvil */
+    white-space: normal; /* ✅ Permite múltiples líneas en móvil */
   }
 }
 
@@ -628,6 +737,24 @@ p {
     padding: var(--spacing-xs) var(--spacing-md);
     font-size: 0.9rem;
   }
+  
+  .article-card {
+    padding: var(--spacing-sm);
+  }
+  
+  .article-title {
+    font-size: 1.1rem;
+  }
+  
+  .article-meta {
+    gap: var(--spacing-xs);
+  }
+  
+  /* Asegurar que el grid funcione en móviles pequeños */
+  .col-md-6, .col-lg-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 
 /* ================================================
@@ -639,11 +766,13 @@ p {
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--border-radius);
   padding: var(--spacing-sm) var(--spacing-md);
+  overflow: hidden; /* ✅ Evita desbordamiento */
 }
 
 .breadcrumb-item a {
   color: var(--text-secondary);
   text-decoration: none;
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 .breadcrumb-item a:hover {
@@ -657,6 +786,7 @@ p {
 /* Tablas */
 .table {
   color: var(--text-secondary);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 .table-dark {
@@ -670,6 +800,8 @@ p {
 
 .table-dark td {
   border-color: var(--border-light);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
+  max-width: 200px; /* ✅ Límite para celdas */
 }
 
 /* Badges */
@@ -677,6 +809,7 @@ p {
   border-radius: 20px;
   font-weight: 500;
   padding: var(--spacing-xs) var(--spacing-sm);
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 .badge-primary {
@@ -707,6 +840,8 @@ p {
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-md);
   transition: transform 0.3s ease;
+  max-width: 100%; /* ✅ Evita desbordamiento */
+  object-fit: cover; /* ✅ Mantiene proporciones */
 }
 
 .article-image img:hover {
@@ -720,6 +855,7 @@ p {
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
+  overflow: hidden; /* ✅ Evita desbordamiento */
 }
 
 /* Author info */
@@ -728,6 +864,8 @@ p {
   border-left: 3px solid var(--highlight-cyan);
   padding: var(--spacing-md);
   border-radius: var(--border-radius);
+  overflow: hidden; /* ✅ Evita desbordamiento */
+  word-wrap: break-word; /* ✅ Rompe palabras largas */
 }
 
 .author-avatar {
@@ -740,6 +878,21 @@ p {
   justify-content: center;
   color: var(--primary-dark);
   font-weight: 600;
+  flex-shrink: 0; /* ✅ Mantiene tamaño fijo */
+}
+
+/* User avatar en navbar */
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--highlight-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-dark);
+  font-weight: 600;
+  flex-shrink: 0; /* ✅ Mantiene tamaño fijo */
 }
 
 /* ================================================
@@ -816,3 +969,190 @@ p {
 ::-webkit-scrollbar-thumb:hover {
   background: #0090b8;
 }
+
+/* ================================================
+   19. CORRECCIONES ESPECÍFICAS PARA DESBORDAMIENTO
+   ================================================ */
+
+/* Fix para contenido de Bootstrap Cards */
+.card-body {
+  overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: var(--spacing-md);
+}
+
+.card-title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-title a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-decoration: none;
+  color: var(--text-primary);
+  display: block;
+}
+
+.card-title a:hover {
+  color: var(--highlight-cyan);
+}
+
+.card-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-img-top {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+/* ================================================
+   20. UTILIDADES DE TEXTO SEGURAS
+   ================================================ */
+
+/* Clase utility para truncar texto largo */
+.text-truncate-custom {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Clase utility para texto que se ajusta */
+.text-wrap-safe {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  overflow: hidden;
+}
+
+/* Clase utility para contenido que puede ser largo */
+.content-safe {
+  max-width: 100%;
+  overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ================================================
+   21. MEJORAS ADICIONALES PARA ESTABILIDAD
+   ================================================ */
+
+/* Asegurar que todos los elementos flex no se desborden */
+.d-flex, .flex-wrap {
+  min-width: 0;
+}
+
+.d-flex > * {
+  min-width: 0;
+}
+
+/* Mejoras para botones en contenedores flexibles */
+.btn-group {
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+/* Asegurar que las imágenes no rompan el layout */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix para enlaces largos */
+a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ================================================
+   22. ESTADOS DE CARGA Y ERROR
+   ================================================ */
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 180, 216, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--highlight-cyan);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-state {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--error);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  color: var(--error);
+  text-align: center;
+}
+
+/* ================================================
+   23. ACCESIBILIDAD Y USABILIDAD
+   ================================================ */
+
+/* Mejoras para focus */
+*:focus {
+  outline: 2px solid var(--highlight-cyan);
+  outline-offset: 2px;
+}
+
+/* Skip link para accesibilidad */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--highlight-cyan);
+  color: var(--primary-dark);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  z-index: 9999;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Mejoras para lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ================================================
+   24. CLASES DE DEBUGGING (REMOVER EN PRODUCCIÓN)
+   ================================================ */
+
+/* Uncomment estas clases solo para debugging */
+/*
+.debug-overflow {
+  border: 2px solid red !important;
+  background: rgba(255, 0, 0, 0.1) !important;
+}
+
+.debug-text {
+  background: rgba(255, 255, 0, 0.2) !important;
+  border: 1px solid yellow !important;
+}
+*/
