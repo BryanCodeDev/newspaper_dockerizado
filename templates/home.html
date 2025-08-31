@@ -1,111 +1,131 @@
 {% extends 'base.html' %}
 
-{% block title %}Drift Zone - El Mejor Blog de Drift{% endblock title %}
+{% block title %}Drift Blog - Plataforma Profesional de Automovilismo{% endblock title %}
 
 {% block content %}
-<div class="hero-section text-center mb-5">
-    <h1 class="display-1 neon-glow fade-in-up">
-        🏎️ DRIFT ZONE
-    </h1>
-    <p class="lead fade-in-up" style="animation-delay: 0.2s;">
-        Bienvenido al <span class="text-gradient">mundo del drift</span> - Donde la velocidad se encuentra con el estilo
-    </p>
-    <p class="fade-in-up drift-accent" style="animation-delay: 0.4s; font-size: 1.1rem;">
-        Descubre las mejores técnicas, los autos más espectaculares y las historias más emocionantes del drift
-    </p>
+<!-- Hero Section -->
+<div class="hero-section fade-in-up">
+    <div class="hero-content">
+        <h1 class="hero-title">DRIFT BLOG</h1>
+        <p class="hero-subtitle">
+            Plataforma profesional para entusiastas del drift, tuning y automovilismo deportivo. 
+            Conecta con expertos, comparte conocimiento técnico y mantente al día con las últimas tendencias.
+        </p>
+        <div class="hero-actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'articles:article_new' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-plus"></i> Crear Artículo
+                </a>
+                <a href="{% url 'articles:article_list' %}" class="btn btn-outline btn-lg">
+                    <i class="fas fa-newspaper"></i> Ver Artículos
+                </a>
+            {% else %}
+                <a href="{% url 'signup' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-user-plus"></i> Únete Ahora
+                </a>
+                <a href="{% url 'articles:article_list' %}" class="btn btn-outline btn-lg">
+                    <i class="fas fa-eye"></i> Explorar Contenido
+                </a>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
-<div class="row g-4 mb-5">
-    <!-- Tarjeta de Bienvenida -->
-    <div class="col-lg-8 fade-in-up" style="animation-delay: 0.6s;">
-        <div class="article-card pulse-hover">
-            <h2>¡Acelera tu Pasión!</h2>
-            <p class="lead">
-                En <strong class="drift-accent">Drift Zone</strong> encontrarás todo lo que necesitas saber sobre el fascinante mundo del drift.
-            </p>
-            <p>
-                Desde técnicas básicas hasta los secretos de los profesionales, pasando por reviews de los mejores autos modificados, 
-                configuraciones de suspensión, neumáticos y todo lo que necesitas para convertirte en un verdadero drifter.
-            </p>
-            <div class="text-center mt-4">
-                <a class="btn btn-primary btn-lg pulse-hover" href="{% url 'article_list' %}" role="button">
-                    Ver Todos los Artículos
-                </a>
+<!-- Statistics Section -->
+{% if user.is_authenticated %}
+<div class="stats-section mb-5 fade-in-up" style="animation-delay: 0.2s;">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stat-card info-card text-center">
+                <div class="stat-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3 class="stat-number">{{ total_articles|default:0 }}</h3>
+                <p class="stat-label">Artículos Publicados</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card info-card text-center">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="stat-number">{{ total_authors|default:0 }}</h3>
+                <p class="stat-label">Autores Activos</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card info-card text-center">
+                <div class="stat-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3 class="stat-number">1.2K+</h3>
+                <p class="stat-label">Lecturas Mensuales</p>
             </div>
         </div>
     </div>
+</div>
+{% endif %}
 
-    <!-- Panel Lateral -->
-    <div class="col-lg-4 fade-in-up" style="animation-delay: 0.8s;">
-        <div class="article-card text-center">
-            <h3>Únete a la Comunidad</h3>
-            <p>Comparte tus experiencias, aprende de los mejores y forma parte de la familia drift más grande de habla hispana.</p>
-            
-            {% if not user.is_authenticated %}
-                <div class="d-grid gap-2">
-                    <a href="{% url 'signup' %}" class="btn btn-primary">
-                        Registrarse Gratis
-                    </a>
-                    <a href="{% url 'login' %}" class="btn btn-outline">
-                        Ya tengo cuenta
-                    </a>
-                </div>
-            {% else %}
-                <div class="d-grid gap-2">
-                    <a href="{% url 'article_new' %}" class="btn btn-primary">
-                        Escribir Artículo
-                    </a>
-                    <p class="drift-accent mt-3">
-                        ¡Hola <strong>{{ user.username }}</strong>
-                    </p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
+<!-- Features Section -->
+<div class="features-section mb-5 fade-in-up" style="animation-delay: 0.4s;">
+    ...
 </div>
 
-<!-- Sección de Características -->
-<div class="row g-4 mb-5">
-    <div class="col-md-4 fade-in-up" style="animation-delay: 1s;">
-        <div class="article-card text-center pulse-hover">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🏁</div>
-            <h4>Técnicas Pro</h4>
-            <p>Aprende las técnicas más avanzadas de drift de los mejores pilotos del mundo.</p>
-        </div>
+<!-- Recent Articles Section -->
+{% if recent_articles %}
+<div class="recent-articles-section mb-5 fade-in-up" style="animation-delay: 0.6s;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="section-title mb-0">Artículos Recientes</h2>
+        <a href="{% url 'articles:article_list' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-right"></i> Ver Todos
+        </a>
     </div>
     
-    <div class="col-md-4 fade-in-up" style="animation-delay: 1.2s;">
-        <div class="article-card text-center pulse-hover">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
-            <h4>Tuning & Setup</h4>
-            <p>Guías completas para modificar y configurar tu auto para el drift perfecto.</p>
-        </div>
-    </div>
-    
-    <div class="col-md-4 fade-in-up" style="animation-delay: 1.4s;">
-        <div class="article-card text-center pulse-hover">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🎬</div>
-            <h4>Videos & Reviews</h4>
-            <p>Los mejores videos de drift y reviews de autos modificados más espectaculares.</p>
-        </div>
+    <div class="row g-4">
+        {% for article in recent_articles %}
+            <div class="col-lg-6">
+                <article class="article-card">
+                    <div class="article-header">
+                        <div class="article-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-user"></i>
+                                <span>{{ article.author.get_full_name|default:article.author.username }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>{{ article.date|date:"d M Y" }}</span>
+                            </div>
+                        </div>
+                        <h3 class="article-title">
+                            <a href="{% url 'articles:article_detail' article.pk %}">{{ article.title }}</a>
+                        </h3>
+                    </div>
+                    
+                    {% if article.has_image %}
+                        <div class="article-image mb-3">
+                            <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+                        </div>
+                    {% endif %}
+                    
+                    <div class="article-content">
+                        <div class="article-excerpt">
+                            {{ article.body|truncatewords:25|linebreaks }}
+                        </div>
+                        <a href="{% url 'articles:article_detail' article.pk %}" class="btn btn-outline">
+                            <i class="fas fa-arrow-right"></i> Leer Más
+                        </a>
+                    </div>
+                </article>
+            </div>
+        {% endfor %}
     </div>
 </div>
+{% endif %}
 
-<!-- Call to Action Final -->
-<div class="text-center fade-in-up" style="animation-delay: 1.6s;">
-    <div class="article-card">
-        <h2 class="text-gradient">¿Listo para quemar llanta?</h2>
-        <p class="lead">Sumérgete en el mundo del drift y descubre todo lo que tenemos para ti</p>
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="{% url 'article_list' %}" class="btn btn-primary btn-lg pulse-hover">
-                Explorar Artículos
-            </a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'article_new' %}" class="btn btn-outline btn-lg pulse-hover">
-                    Crear Contenido
-                </a>
-            {% endif %}
-        </div>
-    </div>
+<!-- Call to Action Section -->
+{% if not user.is_authenticated %}
+<div class="cta-section fade-in-up" style="animation-delay: 0.8s;">
+    ...
 </div>
+{% endif %}
 {% endblock content %}

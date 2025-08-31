@@ -1,20 +1,51 @@
 version: '3.8'
 
 services:
-  # Aplicación Django con SQLite
   web:
     build: .
-    container_name: newspaper_web
-    entrypoint: ["./entrypoint.sh"]
-    volumes:
-      - .:/app
-      - db_volume:/app/data
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+      - logs_data:/app/logs
     environment:
-      - DEBUG=1
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-dev-key-change-in-production
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-    restart: unless-stopped
+    depends_on:
+      - redis
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  # Redis para cache (opcional pero recomendado)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Nginx para producción (opcional)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_data:/app/staticfiles:ro
+      - media_data:/app/media:ro
+    depends_on:
+      - web
+    profiles:
+      - production
 
 volumes:
-  db_volume:
+  media_data:
+  static_data:
+  logs_data:
+  redis_data:

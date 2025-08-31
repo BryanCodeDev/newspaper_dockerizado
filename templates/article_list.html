@@ -1,137 +1,41 @@
 {% extends 'base.html' %}
 
-{% block title %}Artículos de Drift - Drift Zone{% endblock title %}
+{% block title %}Artículos - Drift Blog{% endblock title %}
 
 {% block content %}
-<div class="text-center mb-5 fade-in-up">
-    <h1 class="display-4 neon-glow">🏁 Artículos de Drift</h1>
-    <p class="lead">Explora el mejor contenido sobre drift, tuning y automovilismo deportivo</p>
-    
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Artículos</h1>
     {% if user.is_authenticated %}
-        <div class="mt-4">
-            <a href="{% url 'article_new' %}" class="btn btn-primary btn-lg pulse-hover">
-                Escribir Nuevo Artículo
-            </a>
-        </div>
+        <a href="{% url 'articles:article_new' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Artículo
+        </a>
     {% endif %}
 </div>
 
-{% if object_list %}
-    <div class="row">
-        {% for article in object_list %}
-            <div class="col-lg-6 mb-4 fade-in-up">
-                <article class="article-card pulse-hover h-100">
-                    <!-- Header del artículo -->
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="article-meta">
-                            <span class="drift-accent">{{ article.author.username }}</span>
-                            <span class="text-muted">{{ article.date|date:"d M Y" }}</span>
-                        </div>
-                        {% if user == article.author %}
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline dropdown-toggle" data-bs-toggle="dropdown">
-                                    
-                                </button>
-                                <ul class="dropdown-menu glass-effect">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'article_edit' article.pk %}">
-                                            Editar
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item text-danger" href="{% url 'article_delete' article.pk %}">
-                                            Eliminar
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Título del artículo -->
-                    <h3 class="article-title">
-                        <a href="{% url 'article_detail' article.pk %}" class="text-decoration-none">
-                            {{ article.title }}
+<div class="row g-4">
+    {% for article in articles %}
+        <div class="col-md-6 col-lg-4">
+            <div class="article-card">
+                {% if article.image %}
+                    <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'articles:article_detail' article.pk %}">{{ article.title }}</a>
+                    </h5>
+                    <p class="card-text text-muted">
+                        Por <a href="{% url 'articles:author_articles' article.author.username %}">
+                            {{ article.author.get_full_name|default:article.author.username }}
                         </a>
-                    </h3>
-
-                    <!-- Contenido del artículo -->
-                    <div class="article-excerpt">
-                        {% if article.body|length > 200 %}
-                            {{ article.body|truncatewords:30|linebreaks }}
-                        {% else %}
-                            {{ article.body|linebreaks }}
-                        {% endif %}
-                    </div>
-
-                    <!-- Footer del artículo -->
-                    <div class="mt-auto pt-3 border-top border-secondary">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                {{ article.date|timesince }} atrás
-                            </small>
-                            <a href="{% url 'article_detail' article.pk %}" class="btn btn-outline btn-sm pulse-hover">
-                                Leer Más
-                            </a>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        {% endfor %}
-    </div>
-
-    <!-- Paginación (si la tienes implementada) -->
-    {% comment %}
-    <div class="d-flex justify-content-center mt-5">
-        <nav class="glass-effect p-3 rounded">
-            <ul class="pagination mb-0">
-                <li class="page-item">
-                    <a class="page-link" href="#">Anterior</a>
-                </li>
-                <li class="page-item active">
-                    <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Siguiente</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    {% endcomment %}
-
-{% else %}
-    <!-- Estado vacío -->
-    <div class="text-center fade-in-up">
-        <div class="article-card">
-            <div style="font-size: 4rem; margin-bottom: 2rem;">🏎️</div>
-            <h3>¡Aún no hay artículos!</h3>
-            <p class="lead text-muted">Sé el primero en compartir contenido sobre drift</p>
-            
-            {% if user.is_authenticated %}
-                <a href="{% url 'article_new' %}" class="btn btn-primary btn-lg pulse-hover">
-                    Escribir el Primer Artículo
-                </a>
-            {% else %}
-                <div class="d-flex justify-content-center gap-3 flex-wrap">
-                    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">
-                        Registrarse
-                    </a>
-                    <a href="{% url 'login' %}" class="btn btn-outline btn-lg">
-                        Iniciar Sesión
-                    </a>
+                        · {{ article.date|date:"d M Y" }}
+                    </p>
+                    <p class="card-text">{{ article.body|truncatewords:20 }}</p>
+                    <a href="{% url 'articles:article_detail' article.pk %}" class="btn btn-outline btn-sm">Leer más</a>
                 </div>
-            {% endif %}
+            </div>
         </div>
-    </div>
-{% endif %}
-
-<!-- Botón de regreso -->
-<div class="text-center mt-5 fade-in-up">
-    <a href="{% url 'home' %}" class="btn btn-outline pulse-hover">
-        ← Volver al Inicio
-    </a>
+    {% empty %}
+        <p>No hay artículos publicados todavía.</p>
+    {% endfor %}
 </div>
 {% endblock content %}

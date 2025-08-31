@@ -1,8 +1,7 @@
-<!-- article_new.html -->
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Nuevo Artículo - Drift Zone{% endblock title %}
+{% block title %}Nuevo Artículo - Drift Blog{% endblock title %}
 
 {% block content %}
 <div class="text-center mb-5 fade-in-up">
@@ -15,57 +14,7 @@
         <div class="article-card">
             <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
-                
-                <div class="mb-4">
-                    <h4 class="text-gradient mb-3">Detalles del Artículo</h4>
-                    
-                    <!-- Campo de título -->
-                    <div class="mb-3">
-                        <label for="{{ form.title.id_for_label }}" class="form-label">
-                            <i class="fas fa-heading drift-accent"></i> Título del Artículo
-                        </label>
-                        {{ form.title }}
-                        {% if form.title.errors %}
-                            <div class="text-danger mt-1">{{ form.title.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Campo de imagen -->
-                    <div class="mb-4">
-                        <label for="{{ form.image.id_for_label }}" class="form-label">
-                            <i class="fas fa-image drift-accent"></i> Imagen Principal (Opcional)
-                        </label>
-                        <div class="image-upload-container">
-                            {{ form.image }}
-                            <div class="image-upload-help mt-2">
-                                <small class="text-muted">
-                                    <i class="fas fa-info-circle"></i>
-                                    Formatos soportados: JPG, PNG, GIF. Tamaño máximo: 5MB
-                                </small>
-                            </div>
-                            <!-- Preview de la imagen -->
-                            <div id="image-preview" class="mt-3" style="display: none;">
-                                <img id="preview-img" src="" alt="Vista previa" class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
-                                <div class="mt-2">
-                                    <button type="button" id="remove-image" class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-trash"></i> Quitar imagen
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Campo de contenido -->
-                    <div class="mb-3">
-                        <label for="{{ form.body.id_for_label }}" class="form-label">
-                            <i class="fas fa-align-left drift-accent"></i> Contenido
-                        </label>
-                        {{ form.body }}
-                        {% if form.body.errors %}
-                            <div class="text-danger mt-1">{{ form.body.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
+                {{ form|crispy }}
 
                 <div class="glass-effect p-4 rounded mb-4">
                     <h6 class="drift-accent mb-3">Consejos para un buen artículo:</h6>
@@ -79,7 +28,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between flex-wrap gap-3">
-                    <a href="{% url 'article_list' %}" class="btn btn-outline">
+                    <a href="{% url 'articles:article_list' %}" class="btn btn-outline">
                         ← Cancelar
                     </a>
                     <button class="btn btn-primary btn-lg pulse-hover" type="submit">
@@ -90,37 +39,4 @@
         </div>
     </div>
 </div>
-
-
-<script>
-// Preview de imagen
-document.addEventListener('DOMContentLoaded', function() {
-    const imageInput = document.getElementById('{{ form.image.id_for_label }}');
-    const imagePreview = document.getElementById('image-preview');
-    const previewImg = document.getElementById('preview-img');
-    const removeButton = document.getElementById('remove-image');
-    
-    if (imageInput) {
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-    
-    if (removeButton) {
-        removeButton.addEventListener('click', function() {
-            imageInput.value = '';
-            imagePreview.style.display = 'none';
-            previewImg.src = '';
-        });
-    }
-});
-</script>
 {% endblock content %}
