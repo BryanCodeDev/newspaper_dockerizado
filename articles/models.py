@@ -8,9 +8,7 @@ import os
 
 def article_image_path(instance, filename):
     """Función para generar la ruta de la imagen del artículo"""
-    # Obtener la extensión del archivo
     ext = filename.split('.')[-1].lower()
-    # Generar nombre único usando timestamp y título
     timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
     title_slug = "".join(c for c in instance.title[:30] if c.isalnum() or c in '-_').lower()
     filename = f"article_{timestamp}_{title_slug}.{ext}"
@@ -20,15 +18,12 @@ class ArticleQuerySet(models.QuerySet):
     """QuerySet personalizado para Article"""
     
     def published(self):
-        """Retorna solo artículos publicados"""
         return self.filter(is_published=True)
     
     def by_author(self, author):
-        """Filtra artículos por autor"""
         return self.filter(author=author)
     
     def search(self, query):
-        """Búsqueda en título y contenido"""
         return self.filter(
             models.Q(title__icontains=query) | 
             models.Q(body__icontains=query)
@@ -49,62 +44,28 @@ class ArticleManager(models.Manager):
 class Article(models.Model):
     """Modelo para artículos del blog de drift"""
     
-    # Campos principales
-    title = models.CharField(
-        max_length=255,
-        verbose_name="Título",
-        help_text="Título del artículo (máximo 255 caracteres)"
-    )
-    body = models.TextField(
-        verbose_name="Contenido",
-        help_text="Contenido principal del artículo"
-    )
+    title = models.CharField(max_length=255, verbose_name="Título")
+    body = models.TextField(verbose_name="Contenido")
     image = models.ImageField(
         upload_to=article_image_path,
         blank=True,
         null=True,
-        verbose_name="Imagen Principal",
-        help_text="Imagen principal del artículo (opcional, máximo 5MB)"
+        verbose_name="Imagen Principal"
     )
     
-    # Metadatos
-    date = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Fecha de Creación"
-    )
-    updated = models.DateTimeField(
-        auto_now=True,
-        verbose_name="Última Actualización"
-    )
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
-        verbose_name="Autor",
-        related_name="articles"
+        related_name="articles",
+        verbose_name="Autor"
     )
     
-    # Control de publicación
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name="Publicado",
-        help_text="Determina si el artículo es visible públicamente"
-    )
+    is_published = models.BooleanField(default=True, verbose_name="Publicado")
+    meta_description = models.CharField(max_length=160, blank=True, verbose_name="Meta Descripción")
+    views_count = models.PositiveIntegerField(default=0, verbose_name="Visualizaciones")
     
-    # SEO y metadatos adicionales
-    meta_description = models.CharField(
-        max_length=160,
-        blank=True,
-        verbose_name="Meta Descripción",
-        help_text="Descripción para SEO (máximo 160 caracteres)"
-    )
-    
-    # Estadísticas
-    views_count = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Visualizaciones"
-    )
-    
-    # Manager personalizado
     objects = ArticleManager()
     
     class Meta:
@@ -121,38 +82,32 @@ class Article(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('article_detail', args=[str(self.pk)])
+        # 👈 CORREGIDO: ahora usa el namespace "articles"
+        return reverse('articles:article_detail', args=[str(self.pk)])
     
     @property
     def has_image(self):
-        """Verifica si el artículo tiene una imagen"""
         return bool(self.image and hasattr(self.image, 'url'))
     
     @property
     def reading_time(self):
-        """Calcula el tiempo estimado de lectura (asumiendo 200 palabras por minuto)"""
         word_count = len(self.body.split())
         reading_time = max(1, round(word_count / 200))
         return f"{reading_time} min de lectura"
     
     @property
     def excerpt(self):
-        """Retorna un extracto del artículo"""
         if self.meta_description:
             return self.meta_description
         words = self.body.split()[:30]
         return ' '.join(words) + ('...' if len(self.body.split()) > 30 else '')
     
     def save(self, *args, **kwargs):
-        """Override del método save para optimizar imágenes"""
         super().save(*args, **kwargs)
-        
-        # Optimizar imagen si existe
         if self.image:
             img_path = self.image.path
             if os.path.exists(img_path):
                 with Image.open(img_path) as img:
-                    # Redimensionar si es muy grande (máximo 1200px de ancho)
                     if img.width > 1200:
                         ratio = 1200 / img.width
                         new_height = int(img.height * ratio)
@@ -160,36 +115,22 @@ class Article(models.Model):
                         img.save(img_path, optimize=True, quality=85)
     
     def increment_views(self):
-        """Incrementa el contador de visualizaciones"""
         self.views_count += 1
         self.save(update_fields=['views_count'])
     
     def can_edit(self, user):
-        """Verifica si un usuario puede editar este artículo"""
         return user.is_authenticated and (user == self.author or user.is_staff)
     
     def can_delete(self, user):
-        """Verifica si un usuario puede eliminar este artículo"""
         return user.is_authenticated and (user == self.author or user.is_staff)
 
 
 class Category(models.Model):
-    """Modelo para categorías de artículos (opcional - para futuras mejoras)"""
+    """Modelo para categorías de artículos"""
     
-    name = models.CharField(
-        max_length=100,
-        unique=True,
-        verbose_name="Nombre"
-    )
-    description = models.TextField(
-        blank=True,
-        verbose_name="Descripción"
-    )
-    slug = models.SlugField(
-        max_length=100,
-        unique=True,
-        verbose_name="Slug"
-    )
+    name = models.CharField(max_length=100, unique=True, verbose_name="Nombre")
+    description = models.TextField(blank=True, verbose_name="Descripción")
+    slug = models.SlugField(max_length=100, unique=True, verbose_name="Slug")
     
     class Meta:
         ordering = ['name']
@@ -200,17 +141,4 @@ class Category(models.Model):
         return self.name
     
     def get_absolute_url(self):
-        return reverse('category_detail', args=[str(self.slug)])
-
-# Si quieres agregar categorías al modelo Article en el futuro:
-"""
-# Agregar este campo al modelo Article:
-category = models.ForeignKey(
-    Category,
-    on_delete=models.SET_NULL,
-    null=True,
-    blank=True,
-    verbose_name="Categoría",
-    related_name="articles"
-)
-"""
+        return reverse('articles:category_detail', args=[str(self.slug)])

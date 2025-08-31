@@ -22,7 +22,17 @@
 
     <hr class="my-4">
 
-    {% if user == article.author %}
+    {# ✅ Corrección: sin paréntesis en condiciones #}
+    {% if user.is_authenticated and user == article.author %}
+        <div class="d-flex gap-2">
+            <a href="{% url 'articles:article_edit' article.pk %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+            <a href="{% url 'articles:article_delete' article.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Eliminar
+            </a>
+        </div>
+    {% elif user.is_authenticated and user.is_staff %}
         <div class="d-flex gap-2">
             <a href="{% url 'articles:article_edit' article.pk %}" class="btn btn-warning">
                 <i class="fas fa-edit"></i> Editar
