@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Editar Comentario - Drift Blog{% endblock title %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4">Editar Comentario</h1>
+    <p class="lead">
+        En: <a href="{% url 'articles:article_detail' article.pk %}">{{ article.title }}</a>
+    </p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="article-card">
+            <!-- Contexto del comentario original -->
+            <div class="comment-context mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-quote-left"></i> 
+                    Comentario Original
+                </h5>
+                <div class="glass-effect p-3 rounded">
+                    <div class="comment-meta mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> 
+                            Publicado {{ comment.created_at|timesince }}
+                            {% if comment.is_edited %}
+                                | <i class="fas fa-edit"></i> Editado anteriormente
+                            {% endif %}
+                        </small>
+                    </div>
+                    <p class="mb-0">{{ comment.content|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Formulario de edición -->
+            <div class="edit-form-section">
+                <h5 class="mb-3">
+                    <i class="fas fa-edit"></i> 
+                    Editar Comentario
+                </h5>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_content" class="form-label">Contenido del comentario</label>
+                        {{ form.content }}
+                        <div class="form-text">
+                            {{ form.content.help_text }}
+                        </div>
+                        {% if form.content.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.content.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="glass-effect p-3 rounded mb-4">
+                        <h6 class="drift-accent mb-2">
+                            <i class="fas fa-info-circle"></i> 
+                            Información
+                        </h6>
+                        <ul class="text-muted mb-0 small">
+                            <li>El comentario se marcará como "editado" al guardarlo</li>
+                            <li>Los cambios son permanentes una vez guardados</li>
+                            <li>Mantén un tono respetuoso en la comunidad</li>
+                            {% if comment.replies.exists %}
+                                <li class="text-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Este comentario tiene {{ comment.replies.count }} respuesta{{ comment.replies.count|pluralize }}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between flex-wrap gap-3">
+                        <a href="{% url 'articles:article_detail' article.pk %}#comment-{{ comment.pk }}" 
+                           class="btn btn-outline">
+                            ← Cancelar
+                        </a>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para validación y contador de caracteres -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.querySelector('textarea[name="content"]');
+    const form = document.querySelector('form');
+    
+    if (textarea) {
+        // Crear contador de caracteres
+        const maxLength = 1000;
+        const counter = document.createElement('div');
+        counter.className = 'char-counter text-muted small mt-1';
+        textarea.parentNode.appendChild(counter);
+        
+        function updateCounter() {
+            const remaining = maxLength - textarea.value.length;
+            counter.textContent = `${textarea.value.length}/${maxLength} caracteres`;
+            
+            if (remaining < 100) {
+                counter.className = 'char-counter text-warning small mt-1';
+            } else if (remaining < 0) {
+                counter.className = 'char-counter text-danger small mt-1';
+                textarea.classList.add('is-invalid');
+            } else {
+                counter.className = 'char-counter text-muted small mt-1';
+                textarea.classList.remove('is-invalid');
+            }
+        }
+        
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Actualizar al cargar
+        
+        // Focus en el textarea
+        textarea.focus();
+        
+        // Posicionar cursor al final
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+    
+    // Validación del formulario
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const content = textarea.value.trim();
+            
+            if (content.length < 5) {
+                e.preventDefault();
+                textarea.classList.add('is-invalid');
+                
+                // Mostrar mensaje de error
+                let errorDiv = form.querySelector('.submit-error');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger submit-error mt-3';
+                    form.appendChild(errorDiv);
+                }
+                errorDiv.textContent = 'El comentario debe tener al menos 5 caracteres.';
+                
+                // Scroll al error
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            
+            if (content.length > 1000) {
+                e.preventDefault();
+                textarea.classList.add('is-invalid');
+                
+                let errorDiv = form.querySelector('.submit-error');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger submit-error mt-3';
+                    form.appendChild(errorDiv);
+                }
+                errorDiv.textContent = 'El comentario no puede exceder 1000 caracteres.';
+                
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            
+            // Remover mensajes de error si todo está bien
+            const errorDiv = form.querySelector('.submit-error');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+            
+            // Agregar estado de carga al botón
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            }
+        });
+    }
+    
+    // Confirmar si el usuario intenta salir sin guardar cambios
+    let originalContent = textarea ? textarea.value : '';
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (textarea && textarea.value !== originalContent) {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
+    });
+    
+    // Limpiar el listener cuando se envía el formulario
+    if (form) {
+        form.addEventListener('submit', function() {
+            window.removeEventListener('beforeunload', arguments.callee);
+        });
+    }
+});
+
+// Función para preview en tiempo real
+function togglePreview() {
+    const textarea = document.querySelector('textarea[name="content"]');
+    const previewDiv = document.querySelector('#content-preview');
+    
+    if (!previewDiv) {
+        // Crear div de preview si no existe
+        const preview = document.createElement('div');
+        preview.id = 'content-preview';
+        preview.className = 'glass-effect p-3 rounded mt-3';
+        preview.style.display = 'none';
+        textarea.parentNode.appendChild(preview);
+    }
+    
+    const preview = document.querySelector('#content-preview');
+    
+    if (preview.style.display === 'none') {
+        // Mostrar preview
+        preview.innerHTML = '<h6>Vista Previa:</h6>' + textarea.value.replace(/\n/g, '<br>');
+        preview.style.display = 'block';
+    } else {
+        // Ocultar preview
+        preview.style.display = 'none';
+    }
+}
+</script>
+
+<!-- CSS específico para edición de comentarios -->
+<style>
+.comment-context {
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 3px solid var(--highlight-cyan);
+    border-radius: var(--border-radius);
+}
+
+.edit-form-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border-light);
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.submit-error {
+    margin-top: 1rem;
+}
+
+#content-preview {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-light);
+}
+
+#content-preview h6 {
+    color: var(--highlight-cyan);
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* Animación suave para cambios */
+textarea {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+textarea.is-invalid {
+    border-color: var(--error);
+    box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Estados de carga */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 180, 216, 0.2),
+        transparent
+    );
+    animation: loading-slide 1.5s infinite;
+}
+
+@keyframes loading-slide {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+</style>
+{% endblock content %}

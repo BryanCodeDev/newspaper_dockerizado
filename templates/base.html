@@ -72,10 +72,21 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
-                                        <a class="dropdown-item" href="{% url 'articles:article_list' %}">
+                                        <a class="dropdown-item" href="{% url 'articles:author_articles' user.username %}">
                                             <i class="fas fa-newspaper me-2"></i>Mis Artículos
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'articles:my_comments' %}">
+                                            <i class="fas fa-comments me-2"></i>Mis Comentarios
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'articles:comment_moderation' %}">
+                                            <i class="fas fa-shield-alt me-2"></i>Moderar Comentarios
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item" href="{% url 'password_change' %}">
                                             <i class="fas fa-key me-2"></i>Cambiar Contraseña
@@ -83,9 +94,12 @@
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <a class="dropdown-item" href="{% url 'logout' %}">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                        </a>
+                                        <form method="post" action="{% url 'logout' %}" style="margin: 0; display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left; padding: 0.25rem 1rem; color: inherit;">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                            </button>
+                                        </form>
                                     </li>
                                 </ul>
                             </div>
@@ -157,6 +171,7 @@
                             <li><a href="{% url 'articles:article_list' %}">Todos los Artículos</a></li>
                             {% if user.is_authenticated %}
                                 <li><a href="{% url 'articles:article_new' %}">Escribir Artículo</a></li>
+                                <li><a href="{% url 'articles:my_comments' %}">Mis Comentarios</a></li>
                             {% else %}
                                 <li><a href="{% url 'signup' %}">Únete</a></li>
                             {% endif %}

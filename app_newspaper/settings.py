@@ -137,7 +137,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Login/Logout redirects
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'  # CAMBIO: ahora redirige al login en lugar de home
 LOGIN_URL = 'login'
 
 # Email backend

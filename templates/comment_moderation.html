@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}Moderar Comentarios - Drift Blog{% endblock title %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Moderación de Comentarios</h1>
+    <div class="stats-mini">
+        <div class="stat-item text-center">
+            <strong class="d-block">{{ total_pending }}</strong>
+            <small class="text-muted">Pendientes</small>
+        </div>
+    </div>
+</div>
+
+<div class="moderation-info mb-4">
+    <div class="glass-effect p-3 rounded">
+        <h6 class="mb-2">
+            <i class="fas fa-info-circle"></i> 
+            Información sobre Moderación
+        </h6>
+        <p class="text-muted mb-0 small">
+            Aquí puedes revisar y moderar los comentarios en tus artículos. 
+            Como autor, tienes la responsabilidad de mantener un ambiente constructivo en las discusiones.
+        </p>
+    </div>
+</div>
+
+{% if comments_to_moderate %}
+    <div class="moderation-list">
+        {% for comment in comments_to_moderate %}
+            <div class="moderation-item mb-3">
+                <div class="moderation-card">
+                    <div class="moderation-header">
+                        <div class="comment-info">
+                            <h6 class="mb-1">
+                                {% if comment.is_reply %}
+                                    <i class="fas fa-reply text-primary"></i>
+                                    Respuesta de {{ comment.author.username }}
+                                {% else %}
+                                    <i class="fas fa-comment text-success"></i>
+                                    Comentario de {{ comment.author.username }}
+                                {% endif %}
+                            </h6>
+                            <div class="article-link mb-2">
+                                <small>
+                                    <i class="fas fa-newspaper"></i>
+                                    En: <a href="{% url 'articles:article_detail' comment.article.pk %}#comment-{{ comment.pk }}">
+                                        {{ comment.article.title }}
+                                    </a>
+                                </small>
+                            </div>
+                            <div class="comment-meta">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock"></i>
+                                    {{ comment.created_at|timesince }}
+                                    {% if comment.is_edited %}
+                                        | <i class="fas fa-edit"></i> Editado
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="moderation-actions">
+                            <a href="{% url 'articles:article_detail' comment.article.pk %}#comment-{{ comment.pk }}" 
+                               class="btn btn-sm btn-outline" target="_blank">
+                                <i class="fas fa-external-link-alt"></i> Ver en contexto
+                            </a>
+                            {% if user.is_staff %}
+                                <form method="post" style="display: inline;"
+                                      onsubmit="return confirm('¿Estás seguro de que quieres eliminar este comentario?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="comment_id" value="{{ comment.pk }}">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="comment-content">
+                        <div class="content-preview p-3 glass-effect rounded">
+                            {% if comment.parent %}
+                                <div class="parent-context mb-2 pb-2 border-bottom">
+                                    <small class="text-muted">
+                                        <i class="fas fa-quote-left"></i>
+                                        Respondiendo a {{ comment.parent.author.username }}:
+                                    </small>
+                                    <p class="mb-0 small text-muted fst-italic">
+                                        "{{ comment.parent.content|truncatewords:20 }}"
+                                    </p>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="comment-text">
+                                {{ comment.content|linebreaks }}
+                            </div>
+                        </div>
+                        
+                        {% if comment.replies.exists %}
+                            <div class="replies-info mt-2">
+                                <small class="text-info">
+                                    <i class="fas fa-comments"></i>
+                                    Este comentario tiene {{ comment.replies.count }} respuesta{{ comment.replies.count|pluralize }}
+                                </small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación para moderación -->
+    {% if is_paginated %}
+        <nav aria-label="Navegación de moderación" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-angle-left"></i> Anterior
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                            Siguiente <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% else %}
+    <div class="empty-state text-center">
+        <div class="glass-effect p-5 rounded">
+            <div class="empty-state-icon mb-3">
+                <i class="fas fa-check-circle text-success"></i>
+            </div>
+            <h5>Todo al día</h5>
+            <p class="text-muted mb-4">
+                No hay comentarios pendientes de moderación en tus artículos.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'articles:article_list' %}" class="btn btn-outline">
+                    <i class="fas fa-newspaper"></i> Ver Artículos
+                </a>
+                <a href="{% url 'articles:article_new' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Crear Artículo
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Navegación de regreso -->
+<div class="mt-4">
+    <a href="{% url 'articles:article_list' %}" class="btn btn-outline">
+        ← Volver a Artículos
+    </a>
+</div>
+
+<!-- CSS específico para moderación -->
+<style>
+.moderation-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.moderation-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--highlight-cyan);
+}
+
+.moderation-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.comment-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.comment-info h6 {
+    margin-bottom: 0.5rem;
+}
+
+.comment-info h6 a {
+    color: var(--text-primary);
+    text-decoration: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.comment-info h6 a:hover {
+    color: var(--highlight-cyan);
+}
+
+.article-link a {
+    color: var(--highlight-cyan);
+    text-decoration: none;
+}
+
+.article-link a:hover {
+    text-decoration: underline;
+}
+
+.moderation-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.comment-content {
+    padding: 1rem;
+}
+
+.content-preview {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-light);
+}
+
+.parent-context {
+    background: rgba(0, 180, 216, 0.05);
+    border-left: 2px solid var(--highlight-cyan);
+}
+
+.comment-text {
+    color: var(--text-secondary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.replies-info {
+    padding: 0.5rem;
+    background: rgba(0, 180, 216, 0.05);
+    border-radius: var(--border-radius);
+    border-left: 2px solid var(--highlight-cyan);
+}
+
+.moderation-info {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--border-radius);
+}
+
+/* Estados especiales */
+.comment-flagged {
+    border-left: 3px solid var(--warning);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.comment-reported {
+    border-left: 3px solid var(--error);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Responsive para moderación */
+@media (max-width: 768px) {
+    .moderation-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .moderation-actions {
+        justify-content: flex-end;
+        align-self: stretch;
+    }
+    
+    .d-flex.justify-content-between.align-items-center {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .stats-mini {
+        align-self: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .moderation-actions {
+        gap: 0.25rem;
+    }
+    
+    .moderation-actions .btn {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .comment-content {
+        padding: 0.75rem;
+    }
+    
+    .content-preview {
+        padding: 0.75rem;
+    }
+}
+</style>
+{% endblock content %}

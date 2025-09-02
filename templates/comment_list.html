@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Comentarios - Drift Blog{% endblock title %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Mis Comentarios</h1>
+    <div class="stats-mini d-flex gap-3">
+        <div class="stat-item text-center">
+            <strong class="d-block">{{ total_comments }}</strong>
+            <small class="text-muted">Total</small>
+        </div>
+        <div class="stat-item text-center">
+            <strong class="d-block">{{ total_replies }}</strong>
+            <small class="text-muted">Respuestas</small>
+        </div>
+    </div>
+</div>
+
+{% if comments %}
+    <div class="comments-management">
+        {% for comment in comments %}
+            <div class="comment-management-card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-start">
+                    <div class="comment-info">
+                        <h6 class="mb-1">
+                            {% if comment.is_reply %}
+                                <i class="fas fa-reply text-primary"></i>
+                                Respuesta en:
+                            {% else %}
+                                <i class="fas fa-comment text-success"></i>
+                                Comentario en:
+                            {% endif %}
+                            <a href="{% url 'articles:article_detail' comment.article.pk %}#comment-{{ comment.pk }}">
+                                {{ comment.article.title }}
+                            </a>
+                        </h6>
+                        <div class="comment-meta">
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i>
+                                {{ comment.created_at|timesince }}
+                                {% if comment.is_edited %}
+                                    | <i class="fas fa-edit"></i> Editado
+                                {% endif %}
+                                {% if comment.replies.exists %}
+                                    | <i class="fas fa-comments"></i> {{ comment.replies.count }} respuesta{{ comment.replies.count|pluralize }}
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="comment-actions d-flex gap-2">
+                        <a href="{% url 'articles:edit_comment' comment.article.pk comment.pk %}" 
+                           class="btn btn-sm btn-outline">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <a href="{% url 'articles:article_detail' comment.article.pk %}#comment-{{ comment.pk }}" 
+                           class="btn btn-sm btn-primary">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
+                        <form method="post" action="{% url 'articles:delete_comment' comment.article.pk comment.pk %}" 
+                              style="display: inline;"
+                              onsubmit="return confirm('¿Estás seguro de que quieres eliminar este comentario?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="comment-content">
+                        <p class="mb-0">{{ comment.content|truncatewords:30|linebreaks }}</p>
+                        {% if comment.content|wordcount > 30 %}
+                            <a href="{% url 'articles:article_detail' comment.article.pk %}#comment-{{ comment.pk }}" 
+                               class="text-primary small">
+                                Leer completo...
+                            </a>
+                        {% endif %}
+                    </div>
+                    
+                    {% if comment.parent %}
+                        <div class="parent-context mt-2 p-2 glass-effect rounded">
+                            <small class="text-muted">
+                                <i class="fas fa-reply"></i>
+                                Respondiendo a <strong>{{ comment.parent.author.username }}</strong>:
+                            </small>
+                            <p class="mb-0 small text-muted">
+                                "{{ comment.parent.content|truncatewords:15 }}"
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+        <nav aria-label="Navegación de comentarios" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">
+                            <i class="fas fa-angle-double-left"></i> Primera
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-angle-left"></i> Anterior
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                            Siguiente <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                            Última <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% else %}
+    <div class="empty-state text-center">
+        <div class="glass-effect p-5 rounded">
+            <div class="empty-state-icon mb-3">
+                <i class="fas fa-comments"></i>
+            </div>
+            <h5>No tienes comentarios aún</h5>
+            <p class="text-muted mb-4">
+                Comienza participando en las discusiones de la comunidad.
+            </p>
+            <a href="{% url 'articles:article_list' %}" class="btn btn-primary">
+                <i class="fas fa-newspaper"></i> Explorar Artículos
+            </a>
+        </div>
+    </div>
+{% endif %}
+
+<!-- CSS específico para gestión de comentarios -->
+<style>
+.comment-management-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.comment-management-card .card-header {
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-light);
+    padding: 1rem;
+}
+
+.comment-management-card .card-body {
+    padding: 1rem;
+}
+
+.comment-info h6 a {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.comment-info h6 a:hover {
+    color: var(--highlight-cyan);
+}
+
+.comment-meta {
+    margin-top: 0.25rem;
+}
+
+.comment-actions {
+    flex-shrink: 0;
+}
+
+.stats-mini {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-light);
+}
+
+.stat-item strong {
+    color: var(--highlight-cyan);
+    font-size: 1.1rem;
+}
+
+.parent-context {
+    background: rgba(0, 180, 216, 0.05);
+    border-left: 2px solid var(--highlight-cyan);
+}
+
+.comment-content p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Responsive para gestión de comentarios */
+@media (max-width: 768px) {
+    .comment-management-card .card-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .comment-actions {
+        align-self: stretch;
+        justify-content: flex-end;
+    }
+    
+    .stats-mini {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+}
+</style>
+{% endblock content %}
